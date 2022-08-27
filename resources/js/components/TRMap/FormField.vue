@@ -44,8 +44,14 @@
 
 <script>
 import { FormField, HandlesValidationErrors } from 'laravel-nova'
+import { loadGMapApi } from "@fawmi/vue-google-maps";
 
-const map = { center: {}, selectedPlace: false }
+const map = { center: {}, selectedPlace: false };
+
+loadGMapApi({
+  key: `${Nova.appConfig.api_key}`,
+  libraries: "geocoder",
+});
 
 export default {
     mixins: [FormField, HandlesValidationErrors],
@@ -106,14 +112,19 @@ export default {
         },
 
         markerDragend(marker) {
-            let lat = marker.latLng.lat()
-            let lng = marker.latLng.lng()
+            let lat = marker.latLng.lat();
+            let lng = marker.latLng.lng();
 
-            fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${Nova.appConfig.api_key}`
-            )
-                .then(response => response.json())
-                .then(data => this.setPlace(data.results[0], true))
+            let geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({
+                location: {
+                    lat: lat,
+                    lng: lng,
+                },
+            }).then((response) => {
+                this.setPlace(response.results[0], true);
+            });
         },
 
         setPlace(place, dragend = false) {
