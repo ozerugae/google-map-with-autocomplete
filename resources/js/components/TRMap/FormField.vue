@@ -44,14 +44,8 @@
 
 <script>
 import { FormField, HandlesValidationErrors } from 'laravel-nova'
-import { loadGMapApi } from "@fawmi/vue-google-maps";
 
 const map = { center: {}, selectedPlace: false };
-
-loadGMapApi({
-  key: `${Nova.appConfig.api_key}`,
-  libraries: "geocoder",
-});
 
 export default {
     mixins: [FormField, HandlesValidationErrors],
@@ -156,10 +150,10 @@ export default {
             Nova.$emit('address-update', place.formatted_address)
 
             if (dragend) {
-                this.latitude = place.geometry.location.lat
-                this.longitude = place.geometry.location.lng
-                this.map.center.lat = place.geometry.location.lat
-                this.map.center.lng = place.geometry.location.lng
+                this.latitude = place.geometry.location.lat()
+                this.longitude = place.geometry.location.lng()
+                this.map.center.lat = place.geometry.location.lat()
+                this.map.center.lng = place.geometry.location.lng()
             } else {
                 this.map.center.lat = place.geometry.location.lat()
                 this.map.center.lng = place.geometry.location.lng()
